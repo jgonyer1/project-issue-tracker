@@ -3,6 +3,7 @@ import * as AWSXRay from 'aws-xray-sdk';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import { Project } from '../models/Project';
 import { createLogger } from '../utils/logger';
+import { DynamoDBProjectItem } from './models/DynamoDBProjectItem';
 
 
 const XAWS = AWSXRay.captureAWS(AWS);
@@ -18,7 +19,7 @@ export class ProjectRepository{
         private readonly projectIssuesTable = process.env.PROJECT_ISSUES_TABLE
     ){}
 
-    async getProjects(userId: string): Promise<Project[]>{
+    async getProjects(userId: string): Promise<DynamoDBProjectItem[]>{
         try{
             const result = await this.docClient.query({
               TableName: this.projectIssuesTable,
@@ -28,7 +29,7 @@ export class ProjectRepository{
                 ":projectPrefix": PROJECT_PREFIX
               }
           }).promise();
-            return result.Items as Project[];
+            return result.Items.map(item => { return  new DynamoDBProjectItem(item) });
           }catch(e){
             logger.error(`Failed to get projects for userId: ${userId}`, {error: e});
           }
@@ -49,10 +50,34 @@ export class ProjectRepository{
             logger.error(`Failed to get project for userId: ${userId}, projectId: ${projectId}`, {error: e.error.message});
           }
     }
+
+    async createProject(userId: string, newProject: Project): Promise<Project>{
+      const attributeMap = {
+        PK: userId,
+        SK: newProject.id,
+        name: newProject.name
+      }
+      const dynamodbProjectItem: DynamoDBProjectItem = new DynamoDBProjectItem(attributeMap);
+      try{
+        await this.docClient.put({
+          TableName: this.projectIssuesTable,
+          Item: dynamodbProjectItem
+        }).promise();
+      }catch(e){
+        logger.error(`Failed to add new project: `, dynamodbProjectItem);
+      }
+      
+      return newProject;
+    }
 }
 
+
 function getUserId(rawUserId: string){
+    logger.info(`Giving this userId: ${USER_PREFIX}${rawUserId}`);
     return `${USER_PREFIX}${rawUserId}`
+}
+function parseProjectIdFromSK(sk: string){
+  return sk.replace(PROJECT_PREFIX, "");
 }
 function getProjectId(rawProjectId: string){
     return `${PROJECT_PREFIX}${rawProjectId}`

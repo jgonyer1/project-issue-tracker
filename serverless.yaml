@@ -5,8 +5,22 @@ custom:
   webpack:
     webpackConfig: ./webpack.config.js
     includeModules: true
+  documentation:
+    api:
+      info:
+        version: v1.0.0
+        title: Udacity Todo API
+        description: Serverless application for todos
+    models:
+      - name: CreateProjectRequest
+        contentType: application/json
+        schema: ${file(models/create-project-request.json)}
+      
 plugins: 
   - serverless-webpack
+  - serverless-iam-roles-per-function
+  - serverless-reqvalidator-plugin
+  - serverless-aws-documentation
 provider:
   name: aws
   runtime: nodejs12.x
@@ -16,6 +30,7 @@ provider:
     AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1'
     JWKS_URL: https://dev-xmbz3y4p.us.auth0.com/.well-known/jwks.json
     PROJECT_ISSUES_TABLE: Project_Issues-${self:provider.stage}
+    
 functions:
   Auth:
     handler: src/lambda/auth/authorizer.handler
@@ -32,15 +47,36 @@ functions:
         Action:
             - dynamodb:Query
         Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.PROJECT_ISSUES_TABLE}
-      - Effect: 'Allow'
+  CreateProjects:
+    handler: src/lambda/http/createProject.handler
+    events:
+      - http:
+          method: post
+          path: projects
+          cors: true
+          authorizer: Auth
+          reqValidatorName: RequestBodyValidator
+          documentation:
+            summary: Create a new project
+            description: Create a new project
+            requestModels:
+              'application/json': CreateProjectRequest
+    iamRoleStatements:
+      - Effect: Allow
         Action:
-          - 'xray:PutTraceSegments'
-          - 'xray:PutTelemetryRecords'
-        Resource:
-          - '*'
+            - dynamodb:PutItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.PROJECT_ISSUES_TABLE}
         
 resources:
   Resources:
+    RequestBodyValidator:
+      Type: AWS::ApiGateway::RequestValidator
+      Properties:
+        Name: 'request-body-validator'
+        RestApiId: 
+          Ref: ApiGatewayRestApi
+        ValidateRequestBody: true
+        ValidateRequestParameters: false
     ProjectIssuesTable: 
       Type: AWS::DynamoDB::Table
       Properties:
