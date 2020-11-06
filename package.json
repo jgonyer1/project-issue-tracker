@@ -7,7 +7,12 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "source-map-support": "^0.5.10"
+    "aws-sdk": "^2.785.0",
+    "aws-xray-sdk": "^3.2.0",
+    "jsonwebtoken": "^8.5.1",
+    "jwks-rsa": "^1.11.0",
+    "source-map-support": "^0.5.10",
+    "winston": "^3.3.3"
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.17",
