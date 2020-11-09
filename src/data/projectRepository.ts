@@ -4,6 +4,7 @@ import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import { Project } from '../models/Project';
 import { createLogger } from '../utils/logger';
 import { DynamoDBProjectItem } from './models/DynamoDBProjectItem';
+import { DynamoDBIssueItem } from './models/DynamoDBIssueItem';
 
 
 const XAWS = AWSXRay.captureAWS(AWS);
@@ -35,7 +36,7 @@ export class ProjectRepository{
           }
     }
 
-    async getProject(userId: string, projectId: string): Promise<Project>{
+    async getProject(userId: string, projectId: string): Promise<DynamoDBProjectItem>{
         const key = {
             SK: getUserId(userId),
             PK: getProjectId(projectId)
@@ -45,10 +46,28 @@ export class ProjectRepository{
               TableName: this.projectIssuesTable,
               Key: key              
           }).promise();
-            return result.Item as Project;
+            return result.Item as DynamoDBProjectItem;
           }catch(e){
             logger.error(`Failed to get project for userId: ${userId}, projectId: ${projectId}`, {error: e.error.message});
           }
+    }
+
+    async getIssuesForProject(userId: string, projectId: string){
+      const keyConditionExpression = "PK = :userId and begins_with(SK, :issuePrefix)"
+      const expressionAttributeValues = {
+        ":userId": getUserId(userId),
+        ":issuePrefix": `PROJECT_ISSUE#${projectId}_`
+      };
+      try{
+        const result = await this.docClient.query({
+          TableName: this.projectIssuesTable,
+          KeyConditionExpression: keyConditionExpression,
+          ExpressionAttributeValues: expressionAttributeValues
+        }).promise();
+        return result.Items.map(item => new DynamoDBIssueItem(item));
+      }catch(e){
+        logger.error(`Failed to get issues for userId: ${userId}, projectId: ${projectId}`, {error: e.error.message});
+      }      
     }
 
     async createProject(userId: string, newProject: Project): Promise<Project>{
@@ -75,9 +94,6 @@ export class ProjectRepository{
 function getUserId(rawUserId: string){
     logger.info(`Giving this userId: ${USER_PREFIX}${rawUserId}`);
     return `${USER_PREFIX}${rawUserId}`
-}
-function parseProjectIdFromSK(sk: string){
-  return sk.replace(PROJECT_PREFIX, "");
 }
 function getProjectId(rawProjectId: string){
     return `${PROJECT_PREFIX}${rawProjectId}`
