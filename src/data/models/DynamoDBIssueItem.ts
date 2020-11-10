@@ -2,7 +2,7 @@ import {DynamoDBProjectIssueItem} from './DynamoDBProjectIssueItem';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 export class DynamoDBIssueItem extends DynamoDBProjectIssueItem{
     type: string;
-    ticketNumber: number;
+    issueNumber: number;
     description: string;
     status: string;
     constructor(dynamoDBItem: DocumentClient.AttributeMap) {
@@ -12,7 +12,7 @@ export class DynamoDBIssueItem extends DynamoDBProjectIssueItem{
         const sk = dynamoDBItem.SK.startsWith("PROJECT_ISSUE#") ? dynamoDBItem.SK : `PROJECT_ISSUE#${dynamoDBItem.SK}`;
         super(pk, sk);
         this.type = dynamoDBItem.type;        
-        this.ticketNumber = dynamoDBItem.ticketNumber;        
+        this.issueNumber = dynamoDBItem.issueNumber;        
         this.description = dynamoDBItem.description;        
         this.status = dynamoDBItem.status;            
     }

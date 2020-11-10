@@ -4,11 +4,12 @@ export class Issue{
     type: string;
     status: string;
     description: string;
-    ticketNumber: number;
+    issueNumber: number;
     constructor(dynamodbProjectIssueItem: DynamoDBIssueItem){
-        this.id = dynamodbProjectIssueItem.SK.split("_")[1];
+        this.id = dynamodbProjectIssueItem.SK.split("_")[2];
         this.status = dynamodbProjectIssueItem.status;
         this.description = dynamodbProjectIssueItem.description;
-        this.ticketNumber = dynamodbProjectIssueItem.ticketNumber;
+        this.issueNumber = dynamodbProjectIssueItem.issueNumber;
+        this.type = dynamodbProjectIssueItem.type;
     }
 }

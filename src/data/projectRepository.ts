@@ -38,8 +38,8 @@ export class ProjectRepository{
 
     async getProject(userId: string, projectId: string): Promise<DynamoDBProjectItem>{
         const key = {
-            SK: getUserId(userId),
-            PK: getProjectId(projectId)
+            PK: getUserId(userId),
+            SK: getProjectId(projectId)
         };
         try{
             const result = await this.docClient.get({
@@ -48,7 +48,7 @@ export class ProjectRepository{
           }).promise();
             return result.Item as DynamoDBProjectItem;
           }catch(e){
-            logger.error(`Failed to get project for userId: ${userId}, projectId: ${projectId}`, {error: e.error.message});
+            logger.error(`Failed to get project for userId: ${userId}, projectId: ${projectId}`, e);
           }
     }
 
@@ -66,7 +66,7 @@ export class ProjectRepository{
         }).promise();
         return result.Items.map(item => new DynamoDBIssueItem(item));
       }catch(e){
-        logger.error(`Failed to get issues for userId: ${userId}, projectId: ${projectId}`, {error: e.error.message});
+        logger.error(`Failed to get issues for userId: ${userId}, projectId: ${projectId}`, e);
       }      
     }
 
