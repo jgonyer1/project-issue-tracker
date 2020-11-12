@@ -15,6 +15,12 @@ custom:
       - name: CreateProjectRequest
         contentType: application/json
         schema: ${file(models/create-project-request.json)}
+      - name: CreateIssueRequest
+        contentType: application/json
+        schema: ${file(models/create-issue-request.json)}
+      - name: UpdateIssueRequest
+        contentType: application/json
+        schema: ${file(models/update-issue-request.json)}
       
 plugins: 
   - serverless-webpack
@@ -80,6 +86,52 @@ functions:
             - dynamodb:GetItem
             - dynamodb:Query
         Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.PROJECT_ISSUES_TABLE}
+  CreateIssue:
+    handler: src/lambda/http/createIssue.handler
+    events:
+      - http:
+          method: post
+          path: issues
+          cors: true
+          authorizer: Auth
+          reqValidatorName: RequestBodyValidator
+          documentation:
+            summary: Create a new Issue
+            description: Create a new Issue
+            requestModels:
+              'application/json': CreateIssueRequest
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+            - dynamodb:PutItem
+            - dynamodb:GetItem
+            - dynamodb:Query
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.PROJECT_ISSUES_TABLE}
+  UpdateIssue:
+    handler: src/lambda/http/updateIssue.handler
+    events:
+      - http:
+          method: patch
+          path: issues/{issueId}
+          cors: true
+          authorizer: Auth
+          reqValidatorName: RequestBodyValidator
+          documentation:
+            summary: Update an Issue
+            description: Update an Issue
+            requestModels:
+              'application/json': UpdateIssueRequest
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+            - dynamodb:UpdateItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.PROJECT_ISSUES_TABLE}
+      - Effect: 'Allow'
+        Action:
+          - 'xray:PutTraceSegments'
+          - 'xray:PutTelemetryRecords'
+        Resource:
+          - '*'
         
 resources:
   Resources:

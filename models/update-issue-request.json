@@ -1,0 +1,26 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "issue-update",
+    "type": "object",
+    "properties": {
+      "description": {
+        "type": "string"
+      },
+      "type": {
+        "type": "string"
+      },
+      "status": {
+        "type": "string"
+      },
+      "projectId": {
+        "type": "number"
+      }
+    },
+    "required": [
+      "description",
+      "type",
+      "status",
+      "projectId"
+    ],
+    "additionalProperties": false
+  }

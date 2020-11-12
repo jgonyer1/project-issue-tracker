@@ -2,7 +2,9 @@ import * as AWS  from 'aws-sdk'
 import * as AWSXRay from 'aws-xray-sdk';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import { Project } from '../models/Project';
+import { Issue } from '../models/Issue';
 import { createLogger } from '../utils/logger';
+import { UpdateIssueRequest } from '../requests/UpdateIssueRequest';
 import { DynamoDBProjectItem } from './models/DynamoDBProjectItem';
 import { DynamoDBIssueItem } from './models/DynamoDBIssueItem';
 
@@ -88,6 +90,43 @@ export class ProjectRepository{
       
       return newProject;
     }
+
+    async createIssue(userId: string, newIssue: Issue): Promise<Issue>{
+      const attributeMap = {
+        PK: userId,
+        SK: newIssue.id,
+        description: newIssue.description,
+        type: newIssue.type,
+        issueNumber: newIssue.issueNumber,
+        status: newIssue.status
+      }
+      const dynamodbIssueItem: DynamoDBIssueItem = new DynamoDBIssueItem(attributeMap);
+      try{
+        await this.docClient.put({
+          TableName: this.projectIssuesTable,
+          Item: dynamodbIssueItem
+        }).promise();
+      }catch(e){
+        logger.error(`Failed to add new project: `, dynamodbIssueItem);
+      }
+      
+      return newIssue;
+    }
+
+    async updateIssue(userId: string, updateIssueRequest: UpdateIssueRequest): Promise<any>{
+      const pkUserId = getUserId(userId);
+      const sk = getIssueSK(updateIssueRequest.projectId, updateIssueRequest.issueId);
+      console.log("Key: ", { PK: pkUserId, SK: sk });
+      const upddateItemOutput = await this.docClient.update({
+        TableName: this.projectIssuesTable,
+        Key:{ PK: pkUserId, SK: sk },
+        UpdateExpression: buildUpdateStatement(updateIssueRequest),
+        ExpressionAttributeNames: getUpdateExpressionAttributeNames(updateIssueRequest),
+        ExpressionAttributeValues: getUpdateExpressionValues(updateIssueRequest)
+      }).promise();
+      console.log("Result from update: ", upddateItemOutput);
+      return {};
+    }
 }
 
 
@@ -97,6 +136,28 @@ function getUserId(rawUserId: string){
 }
 function getProjectId(rawProjectId: string){
     return `${PROJECT_PREFIX}${rawProjectId}`
+}
+
+function getIssueSK(projectId: string, issueId: string){
+  return `PROJECT_ISSUE#${projectId}_${issueId}`;
+}
+
+const filterIdsFromUpdateRequest = key => key !== "issueId" && key !== "projectId";
+
+function buildUpdateStatement(updateIssueItem: UpdateIssueRequest): string{
+  return `SET ${Object.keys(updateIssueItem).filter(filterIdsFromUpdateRequest).map(key => `#${key} = :${key}`)}` ;
+}
+function getUpdateExpressionValues(updateIssueItem: UpdateIssueRequest): any{
+  return Object.keys(updateIssueItem).filter(filterIdsFromUpdateRequest).reduce(function(accumulator, currentValue){
+    accumulator[`:${currentValue}`] = updateIssueItem[currentValue];
+    return accumulator;
+  }, {});
+}
+function getUpdateExpressionAttributeNames(updateIssueItem: UpdateIssueRequest){
+  return Object.keys(updateIssueItem).filter(filterIdsFromUpdateRequest).reduce(function(accumulator, currentValue){
+    accumulator[`#${currentValue}`] = currentValue;
+    return accumulator;
+  }, {});
 }
 
 function createDynamoDBClient() {

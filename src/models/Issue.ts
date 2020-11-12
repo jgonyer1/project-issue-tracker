@@ -5,6 +5,7 @@ export class Issue{
     status: string;
     description: string;
     issueNumber: number;
+    attachmentUrl?: string;
     constructor(dynamodbProjectIssueItem: DynamoDBIssueItem){
         this.id = dynamodbProjectIssueItem.SK.split("_")[2];
         this.status = dynamodbProjectIssueItem.status;

@@ -11,5 +11,10 @@ export class Project {
       this.id = dynamodbProjectIssueItem.SK.replace("PROJECT#", "");
       this.name = dynamodbProjectIssueItem.name;
     }
+    
+    determineNextIssueNumber(): number{
+      let currentHighestIssueNumber: number = Math.max(...this.issues.map(issue => issue.issueNumber));
+       return currentHighestIssueNumber + 1;
+    }
   }
   
