@@ -1,18 +1,15 @@
 import 'source-map-support/register';
 import { getUserId} from "./utils";
-import { updateIssue } from "../../services/projects";
+import { deleteIssue } from "../../services/projects";
 import { APIGatewayProxyEvent, APIGatewayProxyHandler, APIGatewayProxyResult } from 'aws-lambda'
-import { UpdateIssueRequest } from "../../requests/UpdateIssueRequest";
 
 export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent, _context): Promise<APIGatewayProxyResult> => {
   const projectId = event.pathParameters.projectId
   const issueId = event.pathParameters.issueId
-  const updatedIssue = JSON.parse(event.body);
-  updatedIssue.issueId = issueId;
-  updatedIssue.projectId = projectId;
-  console.log(`Update issue for Id: ${issueId}`);
-  console.log("Updated issue: ", updatedIssue);
-  const result = await updateIssue(getUserId(event), updatedIssue as UpdateIssueRequest);
+  
+  console.log(`Delete issue for Id: ${issueId}`);
+  
+  const result = await deleteIssue(getUserId(event), projectId, issueId);
   return {
     statusCode: 200,
     headers: {

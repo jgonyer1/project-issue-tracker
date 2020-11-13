@@ -11,16 +11,12 @@
       },
       "status": {
         "type": "string"
-      },
-      "projectId": {
-        "type": "number"
       }
     },
     "required": [
       "description",
       "type",
-      "status",
-      "projectId"
+      "status"
     ],
     "additionalProperties": false
   }

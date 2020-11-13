@@ -128,12 +128,12 @@ export class ProjectRepository{
       return {};
     }
 
-    async deleteIssue(userId: string, issueSK: string){
+    async deleteIssue(userId: string, projectId: string, issueId: string){
       return await this.docClient.delete({
         TableName: this.projectIssuesTable,
         Key: {
-          PK: userId,
-          SK: issueSK
+          PK: getUserId(userId),
+          SK: getIssueSK(projectId, issueId)
         }
       }).promise(); 
     }

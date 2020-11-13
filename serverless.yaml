@@ -112,7 +112,7 @@ functions:
     events:
       - http:
           method: patch
-          path: issues/{issueId}
+          path: projects/{projectId}/{issueId}
           cors: true
           authorizer: Auth
           reqValidatorName: RequestBodyValidator
@@ -125,6 +125,25 @@ functions:
       - Effect: Allow
         Action:
             - dynamodb:UpdateItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.PROJECT_ISSUES_TABLE}
+      - Effect: 'Allow'
+        Action:
+          - 'xray:PutTraceSegments'
+          - 'xray:PutTelemetryRecords'
+        Resource:
+          - '*'
+  DeleteIssue:
+    handler: src/lambda/http/deleteIssue.handler
+    events:
+      - http:
+          method: delete
+          path: projects/{projectId}/{issueId}
+          cors: true
+          authorizer: Auth
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+            - dynamodb:DeleteItem
         Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.PROJECT_ISSUES_TABLE}
       - Effect: 'Allow'
         Action:

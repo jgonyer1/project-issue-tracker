@@ -47,3 +47,7 @@ export  async function createIssue(userId: string, createIssueRequest: CreateIss
 export async function updateIssue(userId: string, updateIssueRequest: UpdateIssueRequest): Promise<any>{
     return projectRepository.updateIssue(userId, updateIssueRequest);
 }
+
+export async function deleteIssue(userId: string, projectId: string, issueId: string): Promise<any>{
+    return projectRepository.deleteIssue(userId, projectId, issueId);
+}
