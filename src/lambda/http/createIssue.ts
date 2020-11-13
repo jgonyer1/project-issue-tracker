@@ -6,7 +6,9 @@ import { CreateIssueRequest } from "../../requests/CreateIssueRequest";
 
 export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent, _context): Promise<APIGatewayProxyResult> => {
   console.log("Got this body: ", JSON.parse(event.body));
-    const newIssue: CreateIssueRequest = JSON.parse(event.body)
+  const projectId = event.pathParameters.projectId;
+  const newIssue: CreateIssueRequest = JSON.parse(event.body)
+  newIssue.projectId = projectId;
   console.log("Processing event: ", event);
   return {
     statusCode: 200,

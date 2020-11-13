@@ -127,6 +127,16 @@ export class ProjectRepository{
       console.log("Result from update: ", upddateItemOutput);
       return {};
     }
+
+    async deleteIssue(userId: string, issueSK: string){
+      return await this.docClient.delete({
+        TableName: this.projectIssuesTable,
+        Key: {
+          PK: userId,
+          SK: issueSK
+        }
+      }).promise(); 
+    }
 }
 
 

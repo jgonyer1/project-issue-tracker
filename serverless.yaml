@@ -91,7 +91,7 @@ functions:
     events:
       - http:
           method: post
-          path: issues
+          path: projects/{projectId}
           cors: true
           authorizer: Auth
           reqValidatorName: RequestBodyValidator
