@@ -6,8 +6,6 @@ export class DynamoDBIssueItem extends DynamoDBProjectIssueItem{
     description: string;
     status: string;
     constructor(dynamoDBItem: DocumentClient.AttributeMap) {
-        console.log("raw attr map from ddb: ", dynamoDBItem);
-
         const pk =  dynamoDBItem.PK.startsWith("USER#") ? dynamoDBItem.PK : `USER#${dynamoDBItem.PK}`;
         const sk = dynamoDBItem.SK.startsWith("PROJECT_ISSUE#") ? dynamoDBItem.SK : `PROJECT_ISSUE#${dynamoDBItem.SK}`;
         super(pk, sk);

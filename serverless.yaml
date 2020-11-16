@@ -72,6 +72,26 @@ functions:
         Action:
             - dynamodb:PutItem
         Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.PROJECT_ISSUES_TABLE}
+  DeleteProject:
+    handler: src/lambda/http/deleteProject.handler
+    events:
+      - http:
+          method: delete
+          path: projects/{projectId}
+          cors: true
+          authorizer: Auth
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+            - dynamodb:BatchWriteItem 
+            - dynamodb:Query 
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.PROJECT_ISSUES_TABLE}
+      - Effect: 'Allow'
+        Action:
+          - 'xray:PutTraceSegments'
+          - 'xray:PutTelemetryRecords'
+        Resource:
+          - '*'
   GetProject:
     handler: src/lambda/http/getProject.handler
     events:

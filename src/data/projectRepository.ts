@@ -9,12 +9,12 @@ import { DynamoDBProjectItem } from './models/DynamoDBProjectItem';
 import { DynamoDBIssueItem } from './models/DynamoDBIssueItem';
 
 
+
 const XAWS = AWSXRay.captureAWS(AWS);
 const logger = createLogger("projectAccess");
 
 const USER_PREFIX = "USER#";
 const PROJECT_PREFIX = "PROJECT#";
-//const PROJECT_ISSUE_PREFIX = "PROJECT_ISSUE#";
 
 export class ProjectRepository{
     constructor(
@@ -90,6 +90,22 @@ export class ProjectRepository{
       
       return newProject;
     }
+    async deleteProject(userId: string, projectId: string){
+      const issues = await this.getIssuesForProject(userId, projectId);
+      
+      try{
+        const requests = getProjectDeleteParams(userId, projectId, issues.map(issue => issue.SK));
+        console.log("requests: ", requests);  
+        return await this.docClient.batchWrite({
+          RequestItems:{
+            [this.projectIssuesTable]: requests
+          }
+        }).promise();
+      }catch(e){
+        logger.error("Failed to delete project with id: " + projectId, e);
+      }
+      
+    }
 
     async createIssue(userId: string, newIssue: Issue): Promise<Issue>{
       const attributeMap = {
@@ -109,6 +125,8 @@ export class ProjectRepository{
       }catch(e){
         logger.error(`Failed to add new project: `, dynamodbIssueItem);
       }
+
+      newIssue.id = newIssue.id.split('_')[1];
       
       return newIssue;
     }
@@ -124,8 +142,7 @@ export class ProjectRepository{
         ExpressionAttributeNames: getUpdateExpressionAttributeNames(updateIssueRequest),
         ExpressionAttributeValues: getUpdateExpressionValues(updateIssueRequest)
       }).promise();
-      console.log("Result from update: ", upddateItemOutput);
-      return {};
+      return upddateItemOutput;
     }
 
     async deleteIssue(userId: string, projectId: string, issueId: string){
@@ -141,11 +158,28 @@ export class ProjectRepository{
 
 
 function getUserId(rawUserId: string){
-    logger.info(`Giving this userId: ${USER_PREFIX}${rawUserId}`);
     return `${USER_PREFIX}${rawUserId}`
 }
 function getProjectId(rawProjectId: string){
     return `${PROJECT_PREFIX}${rawProjectId}`
+}
+function getProjectDeleteParams(userId: string, projectId:string, issueSKs: Array<string>){
+  const requests = issueSKs.map(issueSk => {
+    return {
+      DeleteRequest: {
+        Key:{ PK: getUserId(userId), SK: issueSk
+        }
+      }
+    }
+  });
+  requests.push(
+    {
+      DeleteRequest: {
+        Key: { PK: getUserId(userId), SK: getProjectId(projectId) }
+      }
+    }
+  );  
+  return requests;
 }
 
 function getIssueSK(projectId: string, issueId: string){

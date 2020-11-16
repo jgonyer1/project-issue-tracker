@@ -1,0 +1,304 @@
+{
+	"info": {
+		"_postman_id": "98ee15b7-bb9e-4638-ba80-3097af88b16d",
+		"name": "Project Issue Tracker",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "getProjects",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "Bearer {{authToken}}"
+					}
+				],
+				"url": {
+					"raw": "https://{{apiId}}.execute-api.us-east-1.amazonaws.com/dev/projects",
+					"protocol": "https",
+					"host": [
+						"{{apiId}}",
+						"execute-api",
+						"us-east-1",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"dev",
+						"projects"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "update Issue",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "Bearer {{authToken}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"description\": \"Hey, we changed this from the new path!\",\r\n    \"type\": \"Feature\",\r\n    \"status\": \"In Progress\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{apiId}}.execute-api.us-east-1.amazonaws.com/dev/projects/{{projectId}}/{{issueId}}",
+					"protocol": "https",
+					"host": [
+						"{{apiId}}",
+						"execute-api",
+						"us-east-1",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"dev",
+						"projects",
+						"{{projectId}}",
+						"{{issueId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete Issue",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "Bearer {{authToken}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"description\": \"Hey, we changed this from the new path!\",\r\n    \"type\": \"Feature\",\r\n    \"status\": \"In Progress\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{apiId}}.execute-api.us-east-1.amazonaws.com/dev/projects/{{projectId}}/{{issueId}}",
+					"protocol": "https",
+					"host": [
+						"{{apiId}}",
+						"execute-api",
+						"us-east-1",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"dev",
+						"projects",
+						"{{projectId}}",
+						"{{issueId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete Project",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "Bearer {{authToken}}"
+					}
+				],
+				"url": {
+					"raw": "https://{{apiId}}.execute-api.us-east-1.amazonaws.com/dev/projects/{{deleteProjectId}}",
+					"protocol": "https",
+					"host": [
+						"{{apiId}}",
+						"execute-api",
+						"us-east-1",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"dev",
+						"projects",
+						"{{deleteProjectId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get single project",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{authToken}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "https://{{apiId}}.execute-api.us-east-1.amazonaws.com/dev/projects",
+					"protocol": "https",
+					"host": [
+						"{{apiId}}",
+						"execute-api",
+						"us-east-1",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"dev",
+						"projects"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Project - Good Request",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{authToken}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"New project, new path\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{apiId}}.execute-api.us-east-1.amazonaws.com/dev/projects",
+					"protocol": "https",
+					"host": [
+						"{{apiId}}",
+						"execute-api",
+						"us-east-1",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"dev",
+						"projects"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Issue - Good Request",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "Bearer {{authToken}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"description\": \"New Issue, in anotha one\",\r\n    \"type\": \"Feature\",\r\n    \"status\": \"Open\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{apiId}}.execute-api.us-east-1.amazonaws.com/dev/projects/{{projectId}}",
+					"protocol": "https",
+					"host": [
+						"{{apiId}}",
+						"execute-api",
+						"us-east-1",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"dev",
+						"projects",
+						"{{projectId}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "23c1c997-f3db-4bde-a48d-0501c1e290be",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "cdd27a5f-4c56-40db-be10-8171c0d964fe",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "9ee680e6-bb36-490f-ad8a-c030cf0a486f",
+			"key": "apiId",
+			"value": "toq6ejhzg9"
+		},
+		{
+			"id": "21e07f16-74ab-4ca5-9408-95eea5f0e5e4",
+			"key": "authToken",
+			"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImZ4SGxhS0k1QkFtUkNNN3ZhNXhXZiJ9.eyJpc3MiOiJodHRwczovL2Rldi14bWJ6M3k0cC51cy5hdXRoMC5jb20vIiwic3ViIjoiZ29vZ2xlLW9hdXRoMnwxMDU2NjgwMjE2MjY4NTAzNTk0MTUiLCJhdWQiOiJ1dWo2QUt6VTBOa3cyclVNSzdIQjgyNkRUMzliZGEzNyIsImlhdCI6MTYwNTAxNjQyMSwiZXhwIjoxNjA1MDUyNDIxLCJhdF9oYXNoIjoiUWZtTkFMSlFQdlMxQzcyNDJYZENlQSIsIm5vbmNlIjoiaTBkUWVvR05BaS5QUy1NSE4tRHdlelFxLmV3bzRyalYifQ.GyUNobJ01aFVtMs35aZkoQ4SCuiiB6nM155vETHF2JXRuUzgWwxqYBVLPFd47V_C9c5OtoTcqDaae37MsFotnVzgmBjuGq0wLvcaw0qaNakaT2-wnSrhvuM_VwvmOmD9hdC8YXRmCqRIZ7094NMs8vlgPWoQ99Sx1LhK4ZxD8eokSkH7VjbEI6Yl_YZ5IFZb8jxV6ofDu8Gvxge9_8JmGHctLmLrnzNI5cgo8L4eqakgmJQss2sLBgXve3LGwdOP6oLLq3GEDuNwnmXLadP23us2sK1yl7cknK47hap268ENp8rSE1RAmMJwvES2vmsn-rDudFKDPngonugmrty4QA"
+		},
+		{
+			"id": "1d2cf648-7c08-48f6-8912-5a64acf81078",
+			"key": "projectId",
+			"value": "0cb763d9-b62c-433c-ac38-990fe16cfce9"
+		},
+		{
+			"id": "6b2d806c-a591-4891-bef3-108a3da61ad6",
+			"key": "issueId",
+			"value": "9f309c1b-5442-4974-8f00-d8c57344e56a"
+		},
+		{
+			"id": "841e6d3d-075e-4a76-8811-9472283faf49",
+			"key": "deleteProjectId",
+			"value": "0cb763d9-b62c-433c-ac38-990fe16cfce9"
+		}
+	],
+	"protocolProfileBehavior": {}
+}

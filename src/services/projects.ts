@@ -22,6 +22,9 @@ export  async function createProject(userId: string, createProjectRequest: Creat
     };
     return await projectRepository.createProject(userId, newProject);
 }
+export async function deleteProject(userId: string, projectId: string){
+    return projectRepository.deleteProject(userId, projectId);
+}
 
 export async function getProject(userId: string, projectId: string): Promise<Project>{
     const dbProjectItem = await projectRepository.getProject(userId, projectId);
